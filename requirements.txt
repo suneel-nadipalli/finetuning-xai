@@ -5,6 +5,7 @@ seaborn
 scikit-learn
 plotly
 torch
+nltk
 transformers
 streamlit
 streamlit_elements
