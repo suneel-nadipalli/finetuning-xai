@@ -23,6 +23,10 @@ This GitHub repository explores the fine-tuning process in transformer models th
 - Which base features are overwritten during task-specific adaptation?
 - How do transformer models evolve their representations for specialized learning?
 
+## Tok-Viz: Web App
+
+To explore the results of this experiment for yourself without having to set everything up, head on over to [Tok-Viz](https://tok-viz.streamlit.app/)! Tok-Viz is a Streamlit Webapp designed to help users run their own mini-experiments and mess around with some of the features from this experiment.
+
 ## Repository Structure
 
 The repo is structured in the following manner:
@@ -84,80 +88,50 @@ transformers-mi/
 
 ## Experiment Setup
 
-This section outlines the experimental setup for exploring the fine-tuning process in transformer models.
+This section outlines the setup for the experiment.
 
 ### 1. **Datasets**
 - **IMDb**: A dataset for binary sentiment analysis, containing movie reviews labeled as `positive` or `negative`.
 - **Spotify**: A dataset for ratings on a scale of 1-5 for the Spotify app.
-- **News**: A dataset for news topic classification, categorizing articles into various predefined topics.
+- **News**: A dataset for news topic classification, categorizing articles into 5 categories.
 
 ### 2. **Models**
-- **Pretrained Model**: `bert-base-uncased`, a base transformer model trained on general text data. (Also includes use of size-based variations of BERT)
-- **Fine-Tuned Models**: Task-specific versions of `bert-base-uncased`, fine-tuned on the respective datasets.
+- **Pretrained Model**: The base `bert-base-uncased` model and certain size-based variations (`bert-medium`, `bert-small`, `bert-tiny`)
+- **Fine-Tuned Models**: The `bert-base-uncased` model fine-tuned on the respective datasets.
 
 ### 3. **Layers**
 - Three representative layers were selected for each dataset:
   - **Early Layer**: Captures low-level syntax and token-level information (e.g., Layer 3).
   - **Middle Layer**: Transitions to semantic and context-based representations (e.g., Layer 6).
-  - **Late Layer**: Encodes task-specific adaptations and decision-making processes (e.g., Layer 12).
+  - **Late Layer**: Encodes task-specific adaptations (e.g., Layer 12).
 
-### 4. **Tools and Frameworks**
-- **Fine-Tuning**: The `bert-base-uncased` model was fine-tuned separately for each dataset, adapting its representations to the specific tasks (e.g., sentiment analysis, genre classification, and topic classification).
-
-- **Embedding Comparisons**: Layer-wise activations were extracted for each dataset and compared using cosine similarity. This was done for both the pre-trained and fine-tuned models to establish an initial hypothesis regarding the internal mechanisms of the fine-tuning process.
-
-- **Sparse AutoEncoders**: Used to promote monosemanticity by forcing feature sparsity in transformer activations.
-
-- **Variance-Based Analysis**: Identifies the most active and meaningful features across layers and models.
-
-- **Token-Level Visualization**: Examines individual tokens in a given sentences for a certain feature index.
-
-### 5. **Reproducibility**
+### 4. **Reproducibility**
 - Scripts for dataset preparation, activation extraction, and feature analysis are provided in the `scripts` folder.
 - Usage examples are provided in both the `notebooks` folder and the `run.py` scripts.
 - Note: Change `IF_NB` (found in `utils/config.py`) to False when running the `run.py` scripts and to True when running the notebooks
 
 ## Methodology
 
-This section outlines the step-by-step process for exploring how features evolve during fine-tuning in transformer models.
+The step-by-step process for the experiment, detailing each stage.
 
 ### 1. Fine-Tuning
-The `bert-base-uncased` model was fine-tuned individually on three datasets:
-- **IMDb**: Binary sentiment classification (`positive` or `negative`).
-- **Spotify**: Multi-class sentiment analysis for reviews of the Spotify app.
-- **News**: Topic classification for categorizing articles.
-
-Fine-tuning allowed the base model to adapt its representations for specific tasks, creating task-specialized versions of the transformer model.
+The `bert-base-uncased` model was fine-tuned individually on the three datasets:
 
 ### 2. Comparing Activations
-To establish an initial hypothesis, layer-wise activations were extracted for both the pre-trained and fine-tuned models. Cosine similarity was used to compare embeddings across layers, datasets, and model versions (pre-trained vs. fine-tuned). This step highlights how fine-tuning influences the internal structure and representations.
+Activations from eahc layer for every variation of the `bert-base-uncased` model were extracted for both pre-trained and fine-tuned models. Cosine similarity was then used to compare these activations and their evolution across the layers for the datasets and model variations. Based on the results, certain hypotheses were established prior to analysing the SAEs.
 
 ### 3. Extracting Activations
-For each dataset and model (pre-trained and fine-tuned), activations were extracted from three representative layers:
-- **Early Layer (e.g., Layer 3)**: Captures low-level, syntactic information.
-- **Middle Layer (e.g., Layer 6)**: Encodes semantic and contextual information.
-- **Late Layer (e.g., Layer 12)**: Focuses on task-specific adaptations.
-
-These activations were stored for further analysis, with separate files for each dataset, model, and layer.
+Activations for each dataset and model were extracted from 3 pivotal layers (3, 6, 12) and stored for further analysis
 
 ### 4. Training Sparse AutoEncoders
-Sparse AutoEncoders (SAEs) were trained on the extracted activations from each layer. SAEs enforce sparsity, encouraging monosemanticity in the learned representations. By isolating sparse, interpretable features, the SAEs provided a lens through which to analyze the task-specific adaptations within transformer layers.
+Sparse AutoEncoders (SAEs) were trained on the extracted activations from each layer
 
 ### 5. Analyzing Top Features
-Using the activations from the SAEs, the most active features for each layer and dataset were identified. For both pre-trained and fine-tuned models, token-level activations were visualized to interpret what these features represent. Observations focused on how features encode task-specific patterns (e.g., sentiment markers in IMDb) and how these patterns vary across layers and datasets.
-
-### 6. Comparing Feature Evolution
-To uncover how representations evolve during fine-tuning, features were compared across pre-trained and fine-tuned models. This comparison included:
-- Changes in top-activating features between models.
-- Variations in feature behavior across layers.
-- Consistency of task-relevant features between datasets.
-
-This analysis aimed to piece together a story of how features are retained, refined, or replaced across the transformer’s layers during fine-tuning. The findings reveal the mechanisms through which fine-tuning enables transformers to adapt and specialize for diverse tasks.
-
+Using the activations from the SAEs, the most active features for each layer and dataset were identified. For both pre-trained and fine-tuned models, and token-level activations were visualized to interpret what these features represent.
 
 ## Results
 
-This section presents the results obtained throughout the experiment and highlights the key observations noted during the analysis.
+This section presents the results obtained throughout the experiment
 
 ### Fine-Tuning Results
 
@@ -181,11 +155,11 @@ This graph summarizes the similarity curve for the `bert-base-uncased` model acr
 
 - **Early Layers**:
     - The first few layers show high similarity between pre-trained and fine-tuned models.
-    - These layers likely retain general-purpose representations responsible for basic semantic capturing, which are shared across tasks.
+    - These layers likely retain general-purpose representations responsible for basic semantic capturing, which seems to remain consistent across all 3 tasks.
 
 - **Middle Layers**:
-    - A more noticeable departure in similarity is observed across datasets.
-    - These layers appear to start adapting to the specific tasks while still preserving certain foundational representations from the pre-trained model.
+    - There's a more noticable difference in the similarity values across the datasets.
+    - This would indicate that these layers start adapting to speicic tasks whiles till retain some foundational learnings from the base model.
 
 - **Later Layers**:
     - The final layers exhibit the largest discrepancy, both within individual datasets and across datasets.
@@ -267,6 +241,10 @@ The findings from this study open several avenues for further exploration and re
     - Focus on tasks where fine-tuning results in poor performance, replicating the same experiments to explore differences in feature evolution compared to well-adapted tasks.
 
     - Investigate why certain tasks fail to align well with the pre-trained transformer representations and whether these limitations are intrinsic to the architecture or dataset-specific.
+
+- **Publication**:
+
+    - I'm currently focusing on expanding this experiment into a structured and formal research paper and subsequently publishing it.
 
 
 By addressing these directions, the field can move closer to a comprehensive understanding of how transformers work and shedding light on the fine-tuning process works.
