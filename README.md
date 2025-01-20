@@ -175,7 +175,7 @@ While the IMDb and News datasets demonstrated significant improvements post-fine
 
 Comparing the similarity of average activations across datasets between pre-trained and fine-tuned models helped establish a foundational hypothesis about the internal mechanisms of the fine-tuning process.
 
-[graph]
+![BERT Base Embedding Similarity Graph](results/plots/base_similarity_summary.png)
 
 This graph summarizes the similarity curve for the `bert-base-uncased` model across all three datasets. A common trend is observed where similarity decreases as layers progress, providing insights into the role of different layers during fine-tuning:
 
