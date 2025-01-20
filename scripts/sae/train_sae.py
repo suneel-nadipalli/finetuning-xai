@@ -136,10 +136,7 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
 
     autoencoder = SparseAutoencoder(input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, sparsity_lambda=SPARSITY_LAMBDA)
 
-    if device == torch.device("cpu"):
-        autoencoder.load_state_dict(torch.load(model_pth, map_location=device))
-    
-    autoencoder.load_state_dict(torch.load(model_pth))
+    autoencoder.load_state_dict(torch.load(model_pth, map_location=torch.device('cpu')))
 
     autoencoder.to(device)
 
