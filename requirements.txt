@@ -5,8 +5,6 @@ seaborn
 scikit-learn
 plotly
 torch
-trochvision
-torchaudio
 transformers
 streamlit
 streamlit_elements
