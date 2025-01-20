@@ -2,7 +2,6 @@ import sys, torch
 
 from matplotlib import pyplot as plt
 import seaborn as sns
-from IPython.display import display
 import plotly.express as px
 import pandas as pd
 
