@@ -10,3 +10,4 @@ transformers
 streamlit
 streamlit_elements
 streamlit_shadcn_ui
+streamlit_navigation_bar
