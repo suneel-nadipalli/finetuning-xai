@@ -3,7 +3,7 @@ import streamlit as st
 
 sys.path.append('../..')
 
-from ..components.dataset_carousel import *
+from components.dataset_carousel import *
 
 import streamlit_shadcn_ui as ui
 
