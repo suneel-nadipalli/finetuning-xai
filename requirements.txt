@@ -7,7 +7,7 @@ plotly
 torch
 nltk
 transformers
-streamlit
+streamlit==1.35.0
 streamlit_elements
 streamlit_shadcn_ui
 streamlit_navigation_bar
