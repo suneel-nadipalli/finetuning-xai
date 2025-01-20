@@ -151,6 +151,8 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
 
     activations = torch.load(activation_pth, map_location=torch.device('cpu'))["activations"]
 
+    labels = torch.load(activation_pth, map_location=torch.device('cpu'))["labels"]
+
     activations.to(device)
 
     labels.to(device)
