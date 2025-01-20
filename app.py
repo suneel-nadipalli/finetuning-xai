@@ -9,7 +9,7 @@ from components.about_page import about_page
 
 from streamlit_navigation_bar import st_navbar
 
-st.set_page_config(page_title="Transformer Visualization App", page_icon="🔍", layout="wide")
+#st.set_page_config(page_title="Transformer Visualization App", page_icon="🔍", layout="wide")
 
 # st.title('SAE: Sentiment Analysis Engine')
 
