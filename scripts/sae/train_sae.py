@@ -136,6 +136,9 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
 
     autoencoder = SparseAutoencoder(input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, sparsity_lambda=SPARSITY_LAMBDA)
 
+    if device == torch.device("cpu"):
+        autoencoder.load_state_dict(torch.load(model_pth, map_location=device))
+    
     autoencoder.load_state_dict(torch.load(model_pth))
 
     autoencoder.to(device)
@@ -147,6 +150,12 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
     else:
         print("Loading pre-trained activations...")
         activation_pth = f"{ACTS_DIR}/{dataset_name}/{dataset_name}_{model_name}_{layer_idx}_act_pt.pt"
+
+    if device == torch.device("cpu"):
+
+        activations = torch.load(activation_pth)["activations"]
+
+        labels = torch.load(activation_pth)["labels"]
 
     activations = torch.load(activation_pth)["activations"]
 

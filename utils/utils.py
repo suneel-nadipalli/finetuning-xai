@@ -26,6 +26,9 @@ def load_model_tok(dataset_name, model_name, ft=True, num_labels=5, device=None)
 
         model_pth = f"{MODELS_DIR}/{dataset_name}/{dataset_name}_{model_name}_model.pt"
 
+        if device == torch.device("cpu"):
+            model.load_state_dict(torch.load(model_pth, map_location=device))
+        
         model.load_state_dict(torch.load(model_pth))
     
     else:
@@ -33,7 +36,6 @@ def load_model_tok(dataset_name, model_name, ft=True, num_labels=5, device=None)
     
     model.to(device)
 
-    # model = torch.load(model_path)
     model.eval()  # Set to evaluation mode
 
     return model, tokenizer
