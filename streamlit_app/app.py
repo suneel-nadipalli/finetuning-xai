@@ -3,8 +3,6 @@ import streamlit as st
 
 sys.path.append('..')
 
-from scripts.sae.infer_sae import *
-
 from components.landing_page import landing_page
 from components.viz_page import viz_page
 from components.about_page import about_page
