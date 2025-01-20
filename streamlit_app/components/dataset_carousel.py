@@ -5,7 +5,7 @@ sys.path.append('../..')
 from scripts.sae.train_sae import *
 from scripts.sae.infer_sae import *
 
-from streamlit_app.components.utils import *
+from components.utils import *
 from streamlit_elements import elements, mui
 
 def dataset_card(name, desc, task, classes, pt_acc, ft_acc):
