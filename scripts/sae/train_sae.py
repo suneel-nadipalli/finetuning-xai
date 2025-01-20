@@ -5,10 +5,10 @@ import torch.nn as nn
 from tqdm import tqdm
 
 import nltk
-nltk.download("punkt")
-nltk.download('punkt_tab')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# nltk.download("punkt")
+# nltk.download('punkt_tab')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
 
 
 sys.path.append('../')
@@ -31,7 +31,10 @@ class SparseAutoencoder(nn.Module):
     def sparsity_loss(self, encoded):
         return self.sparsity_lambda * torch.mean(torch.abs(encoded))
 
-def extract_activations(model, dataloader, dataset_name, model_name, layer_idx, ft=True):
+def extract_activations(model, dataloader, dataset_name, model_name, layer_idx, ft=True, device=None):
+
+    if device is None:
+        device = DEVICE
     
     activations = []
     
@@ -40,9 +43,9 @@ def extract_activations(model, dataloader, dataset_name, model_name, layer_idx, 
     with torch.no_grad():
         for batch in tqdm(dataloader, desc="Extracting activations"):
             
-            input_ids = batch[0].to(DEVICE)
+            input_ids = batch[0].to(device)
             
-            attention_mask = batch[1].to(DEVICE)
+            attention_mask = batch[1].to(device)
             
             label = batch[2]
 
@@ -72,11 +75,14 @@ def extract_activations(model, dataloader, dataset_name, model_name, layer_idx, 
     
     return activations, labels
 
-def train_sae(activations, dataset_name, model_name, layer_idx, ft=True):
+def train_sae(activations, dataset_name, model_name, layer_idx, ft=True, device=None):
+
+    if device is None:
+        device = DEVICE
     
     autoencoder = SparseAutoencoder(input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, sparsity_lambda=SPARSITY_LAMBDA)
     
-    autoencoder.to(DEVICE)
+    autoencoder.to(device)
     
     # Create a DataLoader
     dataloader = DataLoader(activations, batch_size=BATCH_SIZE, shuffle=True)
@@ -89,7 +95,7 @@ def train_sae(activations, dataset_name, model_name, layer_idx, ft=True):
         total_loss = 0
         for batch in dataloader:
             # Move the batch to the device
-            batch = batch.to(DEVICE)
+            batch = batch.to(device)
             
             optimizer.zero_grad()
 
@@ -113,7 +119,10 @@ def train_sae(activations, dataset_name, model_name, layer_idx, ft=True):
     
     return autoencoder
 
-def load_sae(dataset_name, model_name, layer_idx, ft=True):
+def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
+
+    if device is None:
+        device = DEVICE
     
     model_name = model_name.replace("-", "_")
 
@@ -129,6 +138,8 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True):
 
     autoencoder.load_state_dict(torch.load(model_pth))
 
+    autoencoder.to(device)
+
     if ft:
         print("Loading fine-tuned activations...")
         activation_pth = f"{ACTS_DIR}/{dataset_name}/{dataset_name}_{model_name}_{layer_idx}_act_ft.pt"
@@ -140,5 +151,9 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True):
     activations = torch.load(activation_pth)["activations"]
 
     labels = torch.load(activation_pth)["labels"]
+
+    activations.to(device)
+
+    labels.to(device)
 
     return autoencoder, activations, labels

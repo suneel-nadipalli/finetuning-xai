@@ -20,6 +20,8 @@ PLOTS_DIR = f"{path_append}results/plots"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# DEVICE = torch.device("cpu")
+
 DATA_FRAC = 0.01  # Percentage of dataset to use
 
 TRAIN_FRAC = 0.8  # Percentage of data to use for training

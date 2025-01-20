@@ -10,7 +10,11 @@ import numpy as np
 from utils.config import *
 
 # Predict single sentence
-def predict_single_sentence(model, tokenizer, sentence, device):
+def predict_single_sentence(model, tokenizer, sentence, device=None):
+
+    if device is None:
+        device = DEVICE
+
     inputs = tokenizer(
         sentence,
         add_special_tokens=True,
@@ -26,7 +30,10 @@ def predict_single_sentence(model, tokenizer, sentence, device):
         return torch.argmax(logits, dim=1).item()
 
 # Classification report and heatmap
-def gen_clf_report(model, dataloader, dataset_name, model_name):
+def gen_clf_report(model, dataloader, dataset_name, model_name, device=None):
+
+    if device is None:
+        device = DEVICE
     
     model.eval()
     
@@ -40,9 +47,9 @@ def gen_clf_report(model, dataloader, dataset_name, model_name):
 
     with torch.no_grad():
         for batch in dataloader:
-            input_ids = batch[0].to(DEVICE)
-            attention_mask = batch[1].to(DEVICE)
-            labels = batch[2].to(DEVICE)
+            input_ids = batch[0].to(device)
+            attention_mask = batch[1].to(device)
+            labels = batch[2].to(device)
 
             logits = model(input_ids, attention_mask=attention_mask).logits
             predictions.extend(torch.argmax(logits, dim=1).cpu().numpy())

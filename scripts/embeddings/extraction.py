@@ -30,7 +30,7 @@ def filter_padding(embeddings, attention_mask):
     valid_tokens = attention_mask.bool()  # Convert attention mask to boolean
     return embeddings[valid_tokens]
 
-def extract_embeddings(model, dataloader):
+def extract_embeddings(model, dataloader, device=None):
     """
     Extracts layer-wise embeddings from the model for the given dataset.
 
@@ -42,6 +42,9 @@ def extract_embeddings(model, dataloader):
     Returns:
     - dict: A dictionary of embeddings for each layer.
     """
+    if device is None:
+        device = DEVICE
+
     model.eval()  # Set model to evaluation mode
     num_layers = model.config.num_hidden_layers
     all_layer_embeddings = initialize_embedding_dict(num_layers)
@@ -49,8 +52,8 @@ def extract_embeddings(model, dataloader):
     with torch.no_grad():
         for batch in dataloader:
             # Move inputs to the device
-            b_input_ids = batch[0].to(DEVICE)
-            b_attention_mask = batch[1].to(DEVICE)
+            b_input_ids = batch[0].to(device)
+            b_attention_mask = batch[1].to(device)
 
             # Forward pass with hidden states output
             outputs = model(

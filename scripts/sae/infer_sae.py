@@ -3,24 +3,29 @@ import sys, torch
 from matplotlib import pyplot as plt
 import seaborn as sns
 from IPython.display import display
+import plotly.express as px
+import pandas as pd
 
-import nltk
-nltk.download("punkt")
-nltk.download('punkt_tab')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# import nltk
+# nltk.download("punkt")
+# nltk.download('punkt_tab')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
 
 sys.path.append('../')
 
 from utils.config import *
 from utils.utils import *
 
-def extract_features(autoencoder, activations):
+def extract_features(autoencoder, activations, device=None):
 
-    autoencoder.to(DEVICE).eval()
+    if device is None:
+        device = DEVICE
+
+    autoencoder.to(device).eval()
     
     with torch.no_grad():
-        _, features = autoencoder(activations.to(DEVICE))
+        _, features = autoencoder(activations.to(device))
 
     return features
 
@@ -89,7 +94,7 @@ def plot_activation(features, feature_idx):
     plt.ylabel("Frequency (Log Scale)")
     plt.show()
 
-def token_level_activations(sentence, autoencoder, model, feature_idx, layer_idx, tokenizer, max_tokens=30, interactive=True):
+def token_level_activations(sentence, autoencoder, model, feature_idx, layer_idx, tokenizer, device=None, max_tokens=30, interactive=True):
     """
     Plots token-level activations for a given feature.
 
@@ -103,19 +108,21 @@ def token_level_activations(sentence, autoencoder, model, feature_idx, layer_idx
         max_tokens (int): Maximum number of tokens to display in the plot. Defaults to 30.
         interactive (bool): If True, uses Plotly for interactive plotting. Defaults to False.
     """
-    
+    if device is None:
+        device = DEVICE
+
     if len(sentence.split()) > max_tokens:
         print(f"Sentence contains more than {max_tokens} tokens. Truncating for visualization.")
         sentence = " ".join(sentence.split()[:max_tokens])
     
     # Tokenize the input sentence
     inputs = tokenizer(sentence, return_tensors="pt", truncation=True, padding=True, max_length=128)
-    inputs = {key: value.to(DEVICE) for key, value in inputs.items()}  # Move inputs to the specified device
+    inputs = {key: value.to(device) for key, value in inputs.items()}  # Move inputs to the specified device
 
     # Extract token-level activations from the model
     with torch.no_grad():
         outputs = model(**inputs, output_hidden_states=True)
-        token_activations = outputs.hidden_states[layer_idx].to(DEVICE)  # Layer 8 activations
+        token_activations = outputs.hidden_states[layer_idx].to(device)  # Layer 8 activations
         _, token_features = autoencoder(token_activations)  # Sparse token-level features
 
     # Extract activations for the specific feature
@@ -124,13 +131,14 @@ def token_level_activations(sentence, autoencoder, model, feature_idx, layer_idx
     # Convert token IDs to text
     tokens = tokenizer.convert_ids_to_tokens(inputs['input_ids'][0].cpu())
 
+    df = pd.DataFrame({"Token": tokens, "Activation": feature_activations})
+
+    df['Activation'] = df['Activation'].apply(lambda x: round(x, 2))
+
     # Handle long sentences by truncating tokens
 
     if interactive:
         # Use Plotly for an interactive plot
-        import plotly.express as px
-        import pandas as pd
-        df = pd.DataFrame({"Token": tokens, "Activation": feature_activations})
         fig = px.bar(df, x="Token", y="Activation", title=f"Token-Level Activations for Feature {feature_idx}", width=1200)
         fig.update_layout(xaxis_tickangle=-45)
         fig.show()
@@ -144,6 +152,8 @@ def token_level_activations(sentence, autoencoder, model, feature_idx, layer_idx
         plt.ylabel("Activation Value")
         plt.tight_layout()  # Ensure everything fits
         plt.show()
+    
+    return df.to_dict(orient="records")
 
 
 pd.set_option('display.max_colwidth', None)  # Prevent truncation of long text in Jupyter

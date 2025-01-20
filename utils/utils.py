@@ -10,7 +10,10 @@ sys.path.append("..")
 
 from utils.config import *
 
-def load_model_tok(dataset_name, model_name, ft=True, num_labels=5):
+def load_model_tok(dataset_name, model_name, ft=True, num_labels=5, device=None):
+    
+    if device is None:
+        device = DEVICE
 
     model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=num_labels)
 
@@ -28,7 +31,7 @@ def load_model_tok(dataset_name, model_name, ft=True, num_labels=5):
     else:
         print("Loading pre-trained model...")
     
-    model.to(DEVICE)
+    model.to(device)
 
     # model = torch.load(model_path)
     model.eval()  # Set to evaluation mode

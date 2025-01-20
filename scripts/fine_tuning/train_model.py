@@ -7,7 +7,10 @@ from transformers import BertForSequenceClassification, AdamW, get_linear_schedu
 from utils.config import *
 
 # Initialize model
-def initialize_model(num_labels, device, learning_rate=2e-5, model_name="bert-base-uncased"):
+def initialize_model(num_labels, device=None, learning_rate=2e-5, model_name="bert-base-uncased"):
+
+    if device is None:
+        device = DEVICE
     
     model = BertForSequenceClassification.from_pretrained(
         model_name, num_labels=num_labels
@@ -22,7 +25,10 @@ def initialize_model(num_labels, device, learning_rate=2e-5, model_name="bert-ba
     return model, tokenizer, optimizer, model_save_name
 
 # Train model
-def train_model(model, train_loader, val_loader, dataset_name, model_name):
+def train_model(model, train_loader, val_loader, dataset_name, model_name, device=None):
+
+    if device is None:
+        device = DEVICE
     
     optimizer = AdamW(model.parameters(), lr=LEARNING_RATE, eps=1e-8)
 
@@ -39,9 +45,9 @@ def train_model(model, train_loader, val_loader, dataset_name, model_name):
         total_loss, correct, total = 0, 0, 0
 
         for batch in train_loader:
-            b_input_ids = batch[0].to(DEVICE)
-            b_attention_mask = batch[1].to(DEVICE)
-            b_labels = batch[2].to(DEVICE)
+            b_input_ids = batch[0].to(device)
+            b_attention_mask = batch[1].to(device)
+            b_labels = batch[2].to(device)
 
             optimizer.zero_grad()
             outputs = model(b_input_ids, attention_mask=b_attention_mask, labels=b_labels)
@@ -71,15 +77,19 @@ def train_model(model, train_loader, val_loader, dataset_name, model_name):
             print(f"Saved new best model with accuracy: {val_accuracy:.4f}")
 
 # Validate model
-def validate_model(model, val_loader):
+def validate_model(model, val_loader, device=None):
+
+    if device is None:
+        device = DEVICE
+
     model.eval()
     total_loss, correct, total = 0, 0, 0
 
     with torch.no_grad():
         for batch in val_loader:
-            b_input_ids = batch[0].to(DEVICE)
-            b_attention_mask = batch[1].to(DEVICE)
-            b_labels = batch[2].to(DEVICE)
+            b_input_ids = batch[0].to(device)
+            b_attention_mask = batch[1].to(device)
+            b_labels = batch[2].to(device)
 
             outputs = model(b_input_ids, attention_mask=b_attention_mask, labels=b_labels)
             loss = outputs.loss
