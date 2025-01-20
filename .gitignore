@@ -41,6 +41,10 @@ Thumbs.db
 *.orig
 *.txt
 
+
+# But do not ignore requirements.txt
+!requirements.txt
+
 # Coverage reports
 .coverage
 coverage.xml
