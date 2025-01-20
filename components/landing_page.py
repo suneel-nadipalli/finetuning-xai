@@ -1,7 +1,7 @@
 import sys
 import streamlit as st
 
-sys.path.append('../..')
+sys.path.append('..')
 
 from components.dataset_carousel import *
 

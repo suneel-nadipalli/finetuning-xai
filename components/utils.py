@@ -1,13 +1,10 @@
 import sys, torch
 import streamlit as st
 
-sys.path.append('../..')
+sys.path.append('..')
 
-from scripts.sae.train_sae import *
 from scripts.sae.infer_sae import *
-
-from utils.utils import *
-from utils.config import *
+from scripts.sae.train_sae import *
 
 import matplotlib.pyplot as plt
 

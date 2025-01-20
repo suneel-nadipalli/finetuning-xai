@@ -1,8 +1,7 @@
 import sys
 
-sys.path.append('../..')
+sys.path.append('..')
 
-from ..scripts.sae.train_sae import *
 from scripts.sae.infer_sae import *
 
 from components.utils import *

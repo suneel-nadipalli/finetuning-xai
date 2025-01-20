@@ -1,8 +1,10 @@
 import torch
 
-IF_NB = True
+IF_NB = False
 
-path_append = "../" if IF_NB else "../../"
+# path_append = "../" if IF_NB else "../../"
+
+path_append = ""
 
 DATA_DIR = f"{path_append}data/fine_tuning"
 
