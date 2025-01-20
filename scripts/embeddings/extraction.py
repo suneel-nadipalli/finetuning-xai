@@ -114,8 +114,5 @@ def load_embeddings(dataset_name, model_name, ft=False):
         load_path = f"{EMBED_DIR}/{dataset_name}/{dataset_name}_{model_name}_ft_embeddings.pt"
     else:
         load_path = f"{EMBED_DIR}/{dataset_name}/{dataset_name}_{model_name}_pt_embeddings.pt"
-
-    if device == torch.device("cpu"):
-        return (torch.load(load_path, map_location=device))
     
-    return torch.load(load_path)
+    return torch.load(load_path, map_location=torch.device('cpu'))

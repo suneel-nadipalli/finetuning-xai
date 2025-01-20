@@ -151,15 +151,8 @@ def load_sae(dataset_name, model_name, layer_idx, ft=True, device=None):
         print("Loading pre-trained activations...")
         activation_pth = f"{ACTS_DIR}/{dataset_name}/{dataset_name}_{model_name}_{layer_idx}_act_pt.pt"
 
-    if device == torch.device("cpu"):
 
-        activations = torch.load(activation_pth)["activations"]
-
-        labels = torch.load(activation_pth)["labels"]
-
-    activations = torch.load(activation_pth)["activations"]
-
-    labels = torch.load(activation_pth)["labels"]
+    activations = torch.load(activation_pth, map_location=torch.device('cpu'))["activations"]
 
     activations.to(device)
 
