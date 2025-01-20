@@ -6,7 +6,7 @@ sys.path.append('../..')
 from scripts.sae.train_sae import *
 from scripts.sae.infer_sae import *
 
-from streamlit_app.components.utils import *
+from components.utils import *
 
 def viz_page():
     
